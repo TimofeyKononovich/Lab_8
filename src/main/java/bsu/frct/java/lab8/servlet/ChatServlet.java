@@ -1,4 +1,4 @@
-package main.java.bsu.frct.java.lab8.entity;
+package main.java.bsu.frct.java.lab8.servlet;
 
 import bsu.frct.java.lab8.entity.ChatMessage;
 import bsu.frct.java.lab8.entity.ChatUser;
