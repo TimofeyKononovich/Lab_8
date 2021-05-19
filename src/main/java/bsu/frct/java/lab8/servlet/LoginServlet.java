@@ -68,4 +68,23 @@ public class LoginServlet extends ChatServlet {
         request.getSession().setAttribute("error", null);
 
     }
+    @Override
+    protected void doPost(final HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        String name = request.getParameter("name");
+        String errorMessage;
+
+        if (name == null || "".equals(name)) {
+            errorMessage = "Username cannot be empty!";
+        } else {
+            errorMessage = processLogonAttempt(name, request, response);
+        }
+
+        if (errorMessage != null) {
+            request.getSession().setAttribute("name", null);
+            request.getSession().setAttribute("error", errorMessage);
+            response.sendRedirect(response.encodeRedirectURL("/Lab_8/"));
+        }
+
+    }
 }
