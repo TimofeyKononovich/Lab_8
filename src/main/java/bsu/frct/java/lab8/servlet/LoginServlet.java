@@ -87,4 +87,37 @@ public class LoginServlet extends ChatServlet {
         }
 
     }
+    String processLogonAttempt(String name, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String sessionId = request.getSession().getId();
+        ChatUser user = activeUsers.get(name);
+
+        if (user == null) {
+            user = new ChatUser(name, Calendar.getInstance().getTimeInMillis(), sessionId);
+
+            synchronized (activeUsers) {
+                activeUsers.put(user.getName(), user);
+            }
+        }
+
+        if (user.getSessionId().equals(sessionId) ||
+                user.getLastInteractionTime()<(Calendar.getInstance().getTimeInMillis()- sessionTimeout*1000)) {
+
+            request.getSession().setAttribute("name", name);
+            user.setLastInteractionTime(Calendar.getInstance().getTimeInMillis());
+
+            Cookie sessionIdCookie = new Cookie("sessionId", sessionId);
+            sessionIdCookie.setMaxAge(60*60*24*365);
+            response.addCookie(sessionIdCookie);
+
+            request.getSession().setAttribute("privatem", null);
+            response.sendRedirect(response.encodeRedirectURL("/Lab_8/view.do"));
+
+            return null;
+
+        } else {
+            return "Sorry, but name <strong>" + name + "</strong> already " +
+                    "occupied by someone. Please choose another name!";
+        }
+
+    }
 }
